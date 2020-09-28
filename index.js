@@ -32,12 +32,12 @@ var storage = multer.diskStorage({
   }
 });
 
-let maxSize = 10 * 1024 * 1024; // max 10MB of uploads
+let maxSize = 50 * 1024 * 1024; // max 50MB of uploads
 var config = multer({ storage: storage,limits:{fileSize:maxSize}});
 
 // Convert the uploaded files into an array. Max files that can be uploaded is 100.
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile(path.join(__dirname, 'index.html'));
 })
 
 app.post('/compressfiles', config.array('files', 100), (req, res) => {
@@ -57,7 +57,7 @@ app.post('/compressfiles', config.array('files', 100), (req, res) => {
           fs.unlinkSync(file.path);
         })
         fs.unlinkSync(outputPath);
-        res.send('Error in downloading ZIP file.')
+        res.send('Error occured');
       }
       // Delete the uploaded files from the server because we dont need to store them in the server
       req.files.forEach(file => {
