@@ -53,12 +53,21 @@ app.post('/compressfiles', config.array('files', 100), (req, res) => {
     fs.writeFileSync(outputPath, zip.toBuffer());
     res.download(outputPath, (err) => {
       if(err) {
+        req.files.forEach(file => {
+          fs.unlinkSync(file.path);
+        })
+        fs.unlinkSync(outputPath);
         res.send('Error in downloading ZIP file.')
       }
+      // Delete the uploaded files from the server because we dont need to store them in the server
+      req.files.forEach(file => {
+        fs.unlinkSync(file.path);
+      })
+      // also delete the output file from the server
+      fs.unlinkSync(outputPath);
     });
   }
 })
-
 
 
 const PORT = process.env.PORT || 3000;
