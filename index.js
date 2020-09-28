@@ -2,6 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const multer = require('multer');
 const path = require('path');
+const admzip = require('adm-zip');
 
 const app = express();
 
@@ -40,12 +41,24 @@ app.get('/', (req, res) => {
 })
 
 app.post('/compressfiles', config.array('files', 100), (req, res) => {
+  const zip = new admzip();
   if(req.files) {
     req.files.forEach(file => {
       console.log(file.path);
-    })
+      zip.addLocalFile(file.path);
+    });
+
+    // Now write the files into the system  
+    let outputPath = Date.now() + 'output.zip';
+    fs.writeFileSync(outputPath, zip.toBuffer());
+    res.download(outputPath, (err) => {
+      if(err) {
+        res.send('Error in downloading ZIP file.')
+      }
+    });
   }
 })
+
 
 
 const PORT = process.env.PORT || 3000;
