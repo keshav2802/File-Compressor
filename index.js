@@ -44,7 +44,6 @@ app.post('/compressfiles', config.array('files', 100), (req, res) => {
   const zip = new admzip();
   if(req.files) {
     req.files.forEach(file => {
-      console.log(file.path);
       zip.addLocalFile(file.path);
     });
 
